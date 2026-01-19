@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система управления АЗС</title>
+    
+    <!-- Bootstrap 5 (только самое необходимое) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Наши стили -->
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22><i class="bi-fuel-pump"></i></text></svg>">
+</head><style>
+    /* Принудительное переопределение Bootstrap */
+    .table {
+        --bs-table-bg: #172F47 !important;
+        --bs-table-color: #D4D4D4 !important;
+        --bs-table-border-color: #355a82 !important;
+        --bs-table-striped-bg: #1a3650 !important;
+        --bs-table-hover-bg: #1a3650 !important;
+    }
+    
+    .table th {
+        background-color: #274569 !important;
+        color: #D4B785 !important;
+        border-color: #355a82 !important;
+    }
+    
+    .table td {
+        background-color: #172F47 !important;
+        color: #D4D4D4 !important;
+        border-color: #355a82 !important;
+    }
+</style>
+<body>
+    <!-- Главный контейнер -->
+    <div class="app-container">
+        
+        <!-- Шапка сайта -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="bi-fuel-pump"></i>
+                    <h1>Управление АЗС</h1>
+                </div>
+                <div class="header-info">
+                    <span id="connection-status" class="status-badge status-warning">
+                        <i class="bi-exclamation-triangle"></i> Бекенд не запущен
+                    </span>
+                    <button class="btn-primary btn-sm" id="btn-test-data">
+                        <i class="bi-database"></i> Тестовые данные
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Основное меню -->
+        <nav class="main-nav">
+            <div class="nav-content">
+                <a href="#" class="nav-link active" data-page="stations">
+                    <i class="bi-geo-alt"></i> Автозаправки
+                </a>
+                <a href="#" class="nav-link admin-only" data-page="users">
+                    <i class="bi-people"></i> Пользователи
+                </a>
+                <a href="#" class="nav-link" data-page="fuel">
+                    <i class="bi-droplet"></i> Топливо
+                </a>
+                <a href="#" class="nav-link" data-page="settings">
+                    <i class="bi-gear"></i> Настройки
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Основное содержимое -->
+        <main class="app-main" id="content">
+            
+            <!-- Страница АЗС (по умолчанию) -->
+            <div class="page active" id="page-stations">
+                <div class="page-header">
+                    <h2>Автозаправочные станции</h2>
+                    <p>Управление списком автозаправочных станций</p>
+                </div>
+                
+                <div class="page-actions">
+                    <button class="btn-primary" id="btn-add-station">
+                        <i class="bi-plus-circle"></i> Добавить АЗС
+                    </button>
+                    <div class="page-stats">
+                        <span class="stat-item">
+                            <i class="bi-fuel-pump"></i>
+                            Всего АЗС: <strong id="total-stations">4</strong>
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Таблица АЗС -->
+                <div class="table-container">
+                    <table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Адрес</th>
+            <th>Телефон</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody id="stations-table">
+        <!-- Данные загружаются через JS -->
+    </tbody>
+</table>
+                </div>
+            </div>
+            
+            <!-- Страница Пользователей -->
+            <div class="page" id="page-users">
+                <div class="page-header">
+                    <h2>Пользователи системы</h2>
+                    <p>Управление пользователями и доступом</p>
+                </div>
+                <div class="empty-state">
+                    <i class="bi-people" style="font-size: 3rem; color: #D4B785;"></i>
+        
+                    <p>Скоро здесь появится управление пользователями</p>
+                </div>
+            </div>
+            
+            <!-- Страница Топлива -->
+            <div class="page" id="page-fuel">
+                <div class="page-header">
+                    <h2>Топливо</h2>
+                    <p>Управление типами топлива и ценами</p>
+                </div>
+                <div class="empty-state">
+                    <i class="bi-droplet" style="font-size: 3rem; color: #D4B785;"></i>
+                      <!-- Контент будет добавляться через JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Страница Настроек -->
+            <div class="page" id="page-settings">
+    <div class="page-header">
+        <h2><i class="bi-gear"></i> Настройки системы</h2>
+        <p>Управление приложением и статистика</p>
+    </div>
+    
+    <!-- Статистика (только для админа) -->
+    <div id="admin-statistics" class="admin-only">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3><i class="bi-bar-chart"></i> Статистика системы</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="stationsChart"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="usersChart"></canvas>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <canvas id="fuelPricesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Настройки темы (для всех) -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="bi-palette"></i> Настройки темы</h3>
+        </div>
+        <div class="card-body">
+           
+            </div>
+        </div>
+    </div>
+</div>
+            
+        </main>
+        
+        <!-- Подвал -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <span>Система управления АЗС © 2024</span>
+                <span>API: <code id="api-status">Не подключен</code></span>
+            </div>
+        </footer>
+        
+    </div>
+    
+    <!-- Модальное окно для АЗС -->
+    <div class="modal" id="station-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">
+                    <i class="bi-plus-circle"></i> Добавить АЗС
+                </h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="station-form">
+                    <input type="hidden" id="station-id">
+                    
+                    <div class="form-group">
+                        <label for="station-name">Название АЗС *</label>
+                        <input type="text" id="station-name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="station-address">Адрес *</label>
+                        <input type="text" id="station-address" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="station-city">Город *</label>
+                            <input type="text" id="station-city" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="station-phone">Телефон</label>
+                            <input type="tel" id="station-phone" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="station-description">Описание</label>
+                        <textarea id="station-description" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="modal-cancel">Отмена</button>
+                <button class="btn-primary" id="modal-save">
+                    <i class="bi-check-circle"></i> Сохранить
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Сообщения -->
+    <div id="message-container"></div>
+    
+<!-- Подключаем скрипты -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api.js"></script>           <!-- 1. Базовый API -->
+<script src="script.js"></script>         <!-- 2. Основной код (АЗС) -->
+<script src="fuel-module.js"></script>    <!-- 3. Модуль топлива (НОВЫЙ) -->
+<script src="users-module-fixed.js"></script>  <!-- 4. Модуль пользователей (исправленный) -->
+<script src="settings-module.js"></script>
+<!-- Chart.js для графиков -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- В конце перед </body> добавь -->
+<script src="theme-module.js"></script>
+<script src="statistics-module.js"></script>
+
+</body>
+</html>
